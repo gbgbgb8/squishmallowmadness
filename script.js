@@ -136,21 +136,23 @@ function update() {
 }
 
 function animateWalk(sprite) {
-    sprite.scaleY = sprite.originalScale.y * (1 + Math.sin(Date.now() / 100) * 0.1);
+    sprite.scaleY = player.originalScale.y * (1 + Math.sin(Date.now() / 100) * 0.1);
 }
 
 function animateJump(sprite) {
-    sprite.scaleY = sprite.originalScale.y * 1.2;
-    sprite.scaleX = sprite.originalScale.x * 0.8;
+    sprite.scaleY = player.originalScale.y * 1.2;
+    sprite.scaleX = player.originalScale.x * 0.8;
 }
 
 function animateFall(sprite) {
-    sprite.scaleY = sprite.originalScale.y * 0.8;
-    sprite.scaleX = sprite.originalScale.x * 1.2;
+    sprite.scaleY = player.originalScale.y * 0.8;
+    sprite.scaleX = player.originalScale.x * 1.2;
 }
 
 function resetAnimation(sprite) {
-    sprite.setScale(sprite.originalScale.x, sprite.originalScale.y);
+    if (player.originalScale) {
+        sprite.setScale(player.originalScale.x, player.originalScale.y);
+    }
 }
 
 function createTouchControls(scene) {
