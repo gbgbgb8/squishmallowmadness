@@ -30,7 +30,7 @@ let touchControls;
 function preload() {
     this.load.image('sky', 'https://labs.phaser.io/assets/skies/space3.png');
     this.load.image('ground', 'https://labs.phaser.io/assets/sprites/platform.png');
-    this.load.svg('hero', 'path/to/pink-puppy-squishmallow.svg');
+    this.load.svg('hero', 'pink-puppy-squishmallow.svg');
 }
 
 function create() {
