@@ -1,3 +1,4 @@
+console.log('Phaser version:', Phaser.VERSION);
 const config = {
     type: Phaser.AUTO,
     width: 800,
