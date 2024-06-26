@@ -107,15 +107,18 @@ function update() {
         resetAnimation(heroSprite);
     }
 
-    if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && player.body.touching.down) {
+    // Check if the player is on the ground
+    const onGround = player.body.touching.down || player.body.blocked.down;
+
+    if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && onGround) {
         player.body.setVelocityY(-330);
         animateJump(heroSprite);
     }
 
     // Landing animation
-    if (player.body.velocity.y > 0 && !player.body.touching.down) {
+    if (player.body.velocity.y > 0 && !onGround) {
         animateFall(heroSprite);
-    } else if (player.body.touching.down) {
+    } else if (onGround) {
         resetAnimation(heroSprite);
     }
 
