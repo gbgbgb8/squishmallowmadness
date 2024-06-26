@@ -30,6 +30,7 @@ let touchControls;
 function preload() {
     this.load.image('sky', 'https://labs.phaser.io/assets/skies/space3.png');
     this.load.image('ground', 'https://labs.phaser.io/assets/sprites/platform.png');
+    this.load.svg('hero', 'path/to/pink-puppy-squishmallow.svg');
 }
 
 function create() {
@@ -41,10 +42,20 @@ function create() {
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
 
-    player = this.add.rectangle(100, 450, 60, 60, 0xffafcc);
+    // Create player using SVG
+    player = this.add.container(100, 450);
+    const heroSprite = this.add.image(0, 0, 'hero');
+    heroSprite.setDisplaySize(60, 60);
+    player.add(heroSprite);
+
+    // Add physics to the container
     this.physics.add.existing(player);
     player.body.setBounce(0.2);
     player.body.setCollideWorldBounds(true);
+    player.body.setSize(60, 60);
+
+    // Store original scale for animations
+    player.originalScale = { x: heroSprite.scaleX, y: heroSprite.scaleY };
 
     hotCocoaVillain = this.add.rectangle(700, 100, 60, 80, 0x6f4e37);
     this.physics.add.existing(hotCocoaVillain);
@@ -81,18 +92,31 @@ function create() {
 }
 
 function update() {
+    const heroSprite = player.getAt(0);
+
     if (cursors.left.isDown || (touchControls && touchControls.left.isDown)) {
         player.body.setVelocityX(-160);
-        player.angle -= 5;
+        heroSprite.setFlipX(true);
+        animateWalk(heroSprite);
     } else if (cursors.right.isDown || (touchControls && touchControls.right.isDown)) {
         player.body.setVelocityX(160);
-        player.angle += 5;
+        heroSprite.setFlipX(false);
+        animateWalk(heroSprite);
     } else {
         player.body.setVelocityX(0);
+        resetAnimation(heroSprite);
     }
 
     if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && player.body.touching.down) {
         player.body.setVelocityY(-330);
+        animateJump(heroSprite);
+    }
+
+    // Landing animation
+    if (player.body.velocity.y > 0 && !player.body.touching.down) {
+        animateFall(heroSprite);
+    } else if (player.body.touching.down) {
+        resetAnimation(heroSprite);
     }
 
     hotCocoaVillain.angle = Math.sin(this.time.now / 200) * 15;
@@ -109,6 +133,24 @@ function update() {
             drip.destroy();
         });
     }
+}
+
+function animateWalk(sprite) {
+    sprite.scaleY = sprite.originalScale.y * (1 + Math.sin(Date.now() / 100) * 0.1);
+}
+
+function animateJump(sprite) {
+    sprite.scaleY = sprite.originalScale.y * 1.2;
+    sprite.scaleX = sprite.originalScale.x * 0.8;
+}
+
+function animateFall(sprite) {
+    sprite.scaleY = sprite.originalScale.y * 0.8;
+    sprite.scaleX = sprite.originalScale.x * 1.2;
+}
+
+function resetAnimation(sprite) {
+    sprite.setScale(sprite.originalScale.x, sprite.originalScale.y);
 }
 
 function createTouchControls(scene) {
