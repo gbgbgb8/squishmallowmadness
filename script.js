@@ -1,4 +1,5 @@
 console.log('Phaser version:', Phaser.VERSION);
+
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -15,10 +16,6 @@ const config = {
         preload: preload,
         create: create,
         update: update
-    },
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
     }
 };
 
@@ -36,42 +33,32 @@ function preload() {
 }
 
 function create() {
-    // Add background
     this.add.image(400, 300, 'sky');
 
-    // Create platforms group
     platforms = this.physics.add.staticGroup();
-
-    // Create graham cracker platforms
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
     platforms.create(600, 400, 'ground');
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
 
-    // Create the squishmallow player
-    player = this.add.circle(100, 450, 30, 0xffafcc);
+    player = this.add.rectangle(100, 450, 60, 60, 0xffafcc);
     this.physics.add.existing(player);
     player.body.setBounce(0.2);
     player.body.setCollideWorldBounds(true);
 
-    // Create the hot cocoa villain
     hotCocoaVillain = this.add.rectangle(700, 100, 60, 80, 0x6f4e37);
     this.physics.add.existing(hotCocoaVillain);
     hotCocoaVillain.body.setBounce(1);
     hotCocoaVillain.body.setCollideWorldBounds(true);
     hotCocoaVillain.body.setVelocity(Phaser.Math.Between(-200, 200), 20);
 
-    // Collider for player and platforms
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(hotCocoaVillain, platforms);
 
-    // Player input
     cursors = this.input.keyboard.createCursorKeys();
 
-    // Touch controls
     createTouchControls(this);
 
-    // Add some marshmallow villagers
     for (let i = 0; i < 12; i++) {
         const x = Phaser.Math.Between(0, 800);
         const y = Phaser.Math.Between(0, 600);
@@ -82,7 +69,6 @@ function create() {
         this.physics.add.collider(villager, platforms);
     }
 
-    // Add some candy cane power-ups
     for (let i = 0; i < 5; i++) {
         const x = Phaser.Math.Between(0, 800);
         const y = Phaser.Math.Between(0, 600);
@@ -95,7 +81,6 @@ function create() {
 }
 
 function update() {
-    // Player movement
     if (cursors.left.isDown || (touchControls && touchControls.left.isDown)) {
         player.body.setVelocityX(-160);
         player.angle -= 5;
@@ -108,18 +93,10 @@ function update() {
 
     if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && player.body.touching.down) {
         player.body.setVelocityY(-330);
-        player.scaleY = 0.8;
-        player.scaleX = 1.2;
-        this.time.delayedCall(200, () => {
-            player.scaleY = 1;
-            player.scaleX = 1;
-        });
     }
 
-    // Make the hot cocoa villain wobble
     hotCocoaVillain.angle = Math.sin(this.time.now / 200) * 15;
 
-    // Drip "cocoa" from the villain
     if (Math.random() < 0.02) {
         const drip = this.add.circle(
             hotCocoaVillain.x + Phaser.Math.Between(-20, 20),
@@ -135,27 +112,35 @@ function update() {
 }
 
 function createTouchControls(scene) {
-    touchControls = scene.add.container(50, 550);
-    
-    const leftButton = createButton(scene, -50, 0, '<', () => touchControls.left.isDown = true, () => touchControls.left.isDown = false);
-    const rightButton = createButton(scene, 50, 0, '>', () => touchControls.right.isDown = true, () => touchControls.right.isDown = false);
-    const jumpButton = createButton(scene, 0, -50, '^', () => touchControls.up.isDown = true, () => touchControls.up.isDown = false);
+    touchControls = {
+        left: { isDown: false },
+        right: { isDown: false },
+        up: { isDown: false }
+    };
 
-    touchControls.add([leftButton, rightButton, jumpButton]);
-    touchControls.setScrollFactor(0);
-    touchControls.setDepth(100);
+    const buttonStyle = {
+        fontSize: '32px',
+        fill: '#ffffff',
+        backgroundColor: '#4a4a4a',
+        padding: {
+            x: 10,
+            y: 10
+        }
+    };
 
-    touchControls.left = { isDown: false };
-    touchControls.right = { isDown: false };
-    touchControls.up = { isDown: false };
-}
+    const leftButton = scene.add.text(50, 550, '<', buttonStyle).setInteractive();
+    const rightButton = scene.add.text(150, 550, '>', buttonStyle).setInteractive();
+    const jumpButton = scene.add.text(100, 500, '^', buttonStyle).setInteractive();
 
-function createButton(scene, x, y, text, onDown, onUp) {
-    const button = scene.add.circle(x, y, 30, 0x4a4a4a);
-    const buttonText = scene.add.text(x, y, text, { fontSize: '32px', fill: '#ffffff' }).setOrigin(0.5);
-    button.setInteractive();
-    button.on('pointerdown', onDown);
-    button.on('pointerup', onUp);
-    button.on('pointerout', onUp);
-    return [button, buttonText];
+    leftButton.on('pointerdown', () => touchControls.left.isDown = true);
+    leftButton.on('pointerup', () => touchControls.left.isDown = false);
+    leftButton.on('pointerout', () => touchControls.left.isDown = false);
+
+    rightButton.on('pointerdown', () => touchControls.right.isDown = true);
+    rightButton.on('pointerup', () => touchControls.right.isDown = false);
+    rightButton.on('pointerout', () => touchControls.right.isDown = false);
+
+    jumpButton.on('pointerdown', () => touchControls.up.isDown = true);
+    jumpButton.on('pointerup', () => touchControls.up.isDown = false);
+    jumpButton.on('pointerout', () => touchControls.up.isDown = false);
 }
