@@ -51,7 +51,7 @@ function create() {
     // Create other platforms
     createPlatform(100, 400, 4, 1);  // Left platform
     createPlatform(600, 300, 4, 1);  // Right platform
-    createPlatform(300, 100, 3, 1);  // Top center platform
+    createPlatform(200, 100, 3, 1);  // Top center platform
 
     player = this.physics.add.sprite(100, 450, 'hero');
     player.setDisplaySize(60, 60);
