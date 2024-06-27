@@ -16,24 +16,24 @@ Marshmallow Madness is designed to appeal to casual gamers, particularly those a
 
 ### Game Elements
 
-1. **Hero (Player Character)**: A Squishmallow represented by a pink rectangle (60x60 pixels) that can move left, right, and jump. The hero rotates while moving, adding a playful touch to the character's movement.
+1. **Hero (Player Character)**: A cute pink puppy Squishmallow represented by an SVG image (60x60 pixels) that can move left, right, and jump. The hero animates while moving, adding a playful touch to the character's movement.
 
-2. **Villain**: A mug of hot cocoa represented by a brown rectangle (60x80 pixels) that moves autonomously and poses a threat to the player and villagers. The villain wobbles as it moves, creating a dynamic and menacing presence.
+2. **Villain**: A menacing mug of hot cocoa represented by an SVG image (80x100 pixels) that moves autonomously and poses a threat to the player. The villain has glowing eyes and moves erratically around the screen.
 
 3. **Platforms**: Graham cracker-themed platforms (using the 'ground' sprite) for the player to navigate. There are currently four platforms strategically placed in the game world.
 
-4. **Marshmallow Villagers**: Small white circles (10 pixels in radius) scattered throughout the level. There are 12 villagers in the current implementation.
+4. **Candies**: Star-shaped collectibles that the player can gather to increase their score. There are 12 candies initially placed in the game.
 
-5. **Candy Cane Power-ups**: Red rectangles (10x30 pixels) that the player can collect. There are 5 candy canes in the current implementation. (Functionality to be implemented in future updates)
-
-6. **Hot Cocoa Drips**: Occasional brown circles (5 pixels in radius) that drop from the villain, adding to the hazardous environment. These drips disappear upon contact with platforms.
+5. **Hot Cocoa Drips**: Occasional brown circles (5 pixels in radius) that drop from the villain, adding to the hazardous environment. These drips disappear upon contact with platforms.
 
 ### Game Mechanics
 
 - **Physics**: The game uses Phaser's Arcade Physics system, with gravity set to 300.
-- **Collisions**: Collisions are implemented between the player, villain, villagers, candy canes, and platforms.
-- **Villain Movement**: The hot cocoa villain moves autonomously with random initial velocity and bounces off the game boundaries.
-- **Hero Movement**: The player can move left and right, jump when touching the ground, and rotates while moving for added visual interest.
+- **Collisions**: Collisions are implemented between the player, villain, candies, and platforms.
+- **Villain Movement**: The hot cocoa villain moves autonomously with random velocity and bounces off the game boundaries.
+- **Hero Movement**: The player can move left and right, jump when touching the ground, and animates while moving for added visual interest.
+- **Scoring System**: Players earn 10 points for each candy collected.
+- **Level Progression**: When all candies are collected, they respawn and an additional villain is added to increase difficulty.
 
 ### Controls
 
@@ -52,9 +52,9 @@ Marshmallow Madness is designed to appeal to casual gamers, particularly those a
 As we progress through the game development project, we plan to implement the following features and enhancements:
 
 1. **Improved Graphics**: 
-   - Replace placeholder shapes with themed sprites and animations
-   - Create a cohesive art style that reflects the marshmallow and cocoa theme
+   - Create custom, themed sprites for platforms and collectibles
    - Implement parallax backgrounds for added depth
+   - Add visual effects for power-ups and hazards
 
 2. **Level Design**: 
    - Create multiple levels with increasing difficulty and unique layouts
@@ -62,34 +62,33 @@ As we progress through the game development project, we plan to implement the fo
    - Design secret areas and shortcuts for advanced players
 
 3. **Power-up System**: 
-   - Implement functionality for candy cane power-ups, such as:
-     - Temporary invincibility
-     - Speed boosts
-     - Double jump ability
-     - Size changes (grow larger to smash through obstacles or shrink to access tight spaces)
+   - Implement various power-ups with unique abilities:
+     - Marshmallow Shield: Temporary invincibility
+     - Sugar Rush: Speed boost
+     - Cocoa Jump: Double jump ability
+     - Size Changing: Grow larger to smash obstacles or shrink to access tight spaces
 
 4. **Hazards**: 
-   - Add various themed hazards like:
+   - Add various themed hazards:
      - Puddles of hot cocoa that can partially melt the hero
      - Cinnamon stick spikes
      - Whipped cream geysers that propel the player
      - Marshmallow toasters that the player must avoid
 
-5. **Scoring System**: 
-   - Implement a point system based on:
-     - Rescued villagers
-     - Collected power-ups
+5. **Enhanced Scoring System**: 
+   - Implement a more complex point system based on:
+     - Rescued marshmallow villagers
      - Time taken to complete levels
      - Consecutive jumps or stunts performed
+   - Add combo multipliers for skilled play
 
 6. **Sound Effects and Music**: 
-   - Add themed audio to enhance the gaming experience:
-     - Squish sounds for jumping
-     - Slurping sounds for the hot cocoa villain
-     - Cheerful background music with a confectionery twist
+   - Create a cheerful, candy-themed soundtrack
+   - Add sound effects for jumping, collecting items, and interacting with hazards
+   - Implement dynamic audio that changes based on game state (e.g., danger, power-ups)
 
 7. **Boss Battles**: 
-   - Introduce challenging encounters with the hot cocoa villain at the end of levels
+   - Introduce challenging encounters with super-sized hot cocoa villains at the end of levels
    - Create unique boss mechanics, such as dodging giant marshmallow projectiles or using environmental objects to defeat the boss
 
 8. **Character Customization**: 
@@ -97,11 +96,10 @@ As we progress through the game development project, we plan to implement the fo
    - Unlock new skins or accessories as players progress through the game
 
 9. **Special Abilities**: 
-   - Give the hero unique powers, such as:
+   - Give the hero unique powers that can be unlocked or upgraded:
      - Marshmallow inflation for floating
      - Cocoa absorption for temporary invincibility
-     - Sugar rush for burst of speed
-     - Sticky marshmallow form to climb walls
+     - Sugar crystal formation for creating temporary platforms
 
 10. **Environmental Interactions**: 
     - Implement interactive elements like:
@@ -115,8 +113,8 @@ As we progress through the game development project, we plan to implement the fo
     - Implement a day/night cycle that affects gameplay mechanics
 
 12. **Multiplayer Mode**: 
-    - Develop a cooperative mode where players work together to save villagers
-    - Create a competitive mode where players race to collect the most power-ups or rescue the most villagers
+    - Develop a cooperative mode where players work together to save marshmallow villagers
+    - Create a competitive mode where players race to collect the most candies or achieve the highest score
 
 13. **Achievements and Unlockables**: 
     - Create a system of achievements to encourage replayability
@@ -151,9 +149,10 @@ As we progress through the game development project, we plan to implement the fo
 
 1. Use the arrow keys (on desktop) or touch controls (on mobile devices) to move the Squishmallow hero.
 2. Navigate through the platforms, avoiding the hot cocoa villain and its drips.
-3. Jump on platforms to reach higher areas and avoid hazards.
-4. (Coming soon) Collect candy cane power-ups and rescue marshmallow villagers to score points.
-5. (Coming soon) Survive as long as possible while achieving the highest score.
+3. Collect star-shaped candies to increase your score.
+4. Jump on platforms to reach higher areas and avoid hazards.
+5. Survive as long as possible while achieving the highest score.
+6. The game ends if you collide with the hot cocoa villain.
 
 ## Development Roadmap
 
@@ -161,16 +160,17 @@ As we progress through the game development project, we plan to implement the fo
    - Implement core gameplay elements (player movement, platforms, villain)
    - Set up basic physics and collisions
    - Create touch controls for mobile play
+   - Implement basic scoring system
 
 2. **Phase 2**: Graphics overhaul and sound implementation
-   - Replace placeholder graphics with themed sprites
-   - Add animations for characters and objects
+   - Replace placeholder graphics with final themed sprites
+   - Add more complex animations for characters and objects
    - Implement background music and sound effects
 
 3. **Phase 3**: Power-up system and hazard introduction
-   - Develop the candy cane power-up functionality
-   - Introduce various hazards to increase gameplay complexity
-   - Implement the scoring system
+   - Develop various power-up functionalities
+   - Introduce additional hazards to increase gameplay complexity
+   - Enhance the scoring system with combos and multipliers
 
 4. **Phase 4**: Level design and progression system
    - Create multiple levels with increasing difficulty
@@ -180,12 +180,13 @@ As we progress through the game development project, we plan to implement the fo
 5. **Phase 5**: Advanced features
    - Develop boss battles
    - Implement special abilities for the hero
-   - Create environmental interactions
+   - Create more complex environmental interactions
 
 6. **Phase 6**: Polish, optimization, and additional game modes
    - Refine gameplay based on user feedback
    - Optimize performance for various devices
    - Add new game modes (time attack, endless mode, etc.)
+   - Implement social features and leaderboards
 
 ## Technical Requirements
 
