@@ -9,7 +9,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false // Set to true to see physics bodies
+            debug: false // Set to true to see physics bodies when needed
         }
     },
     scene: {
@@ -54,6 +54,8 @@ function create() {
 
     // Store original scale for animations
     player.originalScale = { x: player.scaleX, y: player.scaleY };
+    player.isJumping = false;
+    player.isFalling = false;
 
     hotCocoaVillain = this.add.rectangle(700, 100, 60, 80, 0x6f4e37);
     this.physics.add.existing(hotCocoaVillain);
@@ -90,26 +92,40 @@ function create() {
 }
 
 function update() {
+    const onGround = player.body.touching.down;
+
     if (cursors.left.isDown || (touchControls && touchControls.left.isDown)) {
         player.setVelocityX(-160);
         player.setFlipX(true);
-        animateWalk();
+        if (onGround) animateWalk();
     } else if (cursors.right.isDown || (touchControls && touchControls.right.isDown)) {
         player.setVelocityX(160);
         player.setFlipX(false);
-        animateWalk();
+        if (onGround) animateWalk();
     } else {
         player.setVelocityX(0);
-        resetAnimation();
+        if (onGround) resetAnimation();
     }
 
-    if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && player.body.touching.down) {
+    if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && onGround) {
         player.setVelocityY(-330);
-        animateJump();
+        player.isJumping = true;
+        player.isFalling = false;
     }
 
-    if (!player.body.touching.down) {
+    if (player.isJumping && player.body.velocity.y >= 0) {
+        player.isJumping = false;
+        player.isFalling = true;
+    }
+
+    if (player.isJumping) {
+        animateJump();
+    } else if (player.isFalling) {
         animateFall();
+    }
+
+    if (onGround) {
+        player.isFalling = false;
     }
 
     hotCocoaVillain.angle = Math.sin(this.time.now / 200) * 15;
@@ -129,7 +145,10 @@ function update() {
 }
 
 function animateWalk() {
-    player.scaleY = player.originalScale.y * (1 + Math.sin(Date.now() / 100) * 0.1);
+    const walkCycleSpeed = 200; // Adjust this value to change the walking animation speed
+    const walkAmplitude = 0.05; // Adjust this value to change the intensity of the squash and stretch
+    player.scaleY = player.originalScale.y * (1 + Math.sin(Date.now() / walkCycleSpeed) * walkAmplitude);
+    player.scaleX = player.originalScale.x * (1 - Math.sin(Date.now() / walkCycleSpeed) * walkAmplitude);
 }
 
 function animateJump() {
