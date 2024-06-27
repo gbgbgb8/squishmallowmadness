@@ -9,7 +9,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true // Set to true to see physics bodies
         }
     },
     scene: {
@@ -37,25 +37,23 @@ function create() {
     this.add.image(400, 300, 'sky');
 
     platforms = this.physics.add.staticGroup();
+    
+    // Create main ground
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    
+    // Create other platforms
     platforms.create(600, 400, 'ground');
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
 
     // Create player using SVG
-    player = this.add.container(100, 450);
-    const heroSprite = this.add.image(0, 0, 'hero');
-    heroSprite.setDisplaySize(60, 60);
-    player.add(heroSprite);
-
-    // Add physics to the container
-    this.physics.add.existing(player);
-    player.body.setBounce(0.2);
-    player.body.setCollideWorldBounds(true);
-    player.body.setSize(60, 60);
+    player = this.physics.add.sprite(100, 450, 'hero');
+    player.setDisplaySize(60, 60);
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
 
     // Store original scale for animations
-    player.originalScale = { x: heroSprite.scaleX, y: heroSprite.scaleY };
+    player.originalScale = { x: player.scaleX, y: player.scaleY };
 
     hotCocoaVillain = this.add.rectangle(700, 100, 60, 80, 0x6f4e37);
     this.physics.add.existing(hotCocoaVillain);
@@ -92,34 +90,26 @@ function create() {
 }
 
 function update() {
-    const heroSprite = player.getAt(0);
-
     if (cursors.left.isDown || (touchControls && touchControls.left.isDown)) {
-        player.body.setVelocityX(-160);
-        heroSprite.setFlipX(true);
-        animateWalk(heroSprite);
+        player.setVelocityX(-160);
+        player.setFlipX(true);
+        animateWalk();
     } else if (cursors.right.isDown || (touchControls && touchControls.right.isDown)) {
-        player.body.setVelocityX(160);
-        heroSprite.setFlipX(false);
-        animateWalk(heroSprite);
+        player.setVelocityX(160);
+        player.setFlipX(false);
+        animateWalk();
     } else {
-        player.body.setVelocityX(0);
-        resetAnimation(heroSprite);
+        player.setVelocityX(0);
+        resetAnimation();
     }
 
-    // Check if the player is on the ground
-    const onGround = player.body.touching.down || player.body.blocked.down;
-
-    if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && onGround) {
-        player.body.setVelocityY(-330);
-        animateJump(heroSprite);
+    if ((cursors.up.isDown || (touchControls && touchControls.up.isDown)) && player.body.touching.down) {
+        player.setVelocityY(-330);
+        animateJump();
     }
 
-    // Landing animation
-    if (player.body.velocity.y > 0 && !onGround) {
-        animateFall(heroSprite);
-    } else if (onGround) {
-        resetAnimation(heroSprite);
+    if (!player.body.touching.down) {
+        animateFall();
     }
 
     hotCocoaVillain.angle = Math.sin(this.time.now / 200) * 15;
@@ -138,24 +128,22 @@ function update() {
     }
 }
 
-function animateWalk(sprite) {
-    sprite.scaleY = player.originalScale.y * (1 + Math.sin(Date.now() / 100) * 0.1);
+function animateWalk() {
+    player.scaleY = player.originalScale.y * (1 + Math.sin(Date.now() / 100) * 0.1);
 }
 
-function animateJump(sprite) {
-    sprite.scaleY = player.originalScale.y * 1.2;
-    sprite.scaleX = player.originalScale.x * 0.8;
+function animateJump() {
+    player.scaleY = player.originalScale.y * 1.2;
+    player.scaleX = player.originalScale.x * 0.8;
 }
 
-function animateFall(sprite) {
-    sprite.scaleY = player.originalScale.y * 0.8;
-    sprite.scaleX = player.originalScale.x * 1.2;
+function animateFall() {
+    player.scaleY = player.originalScale.y * 0.8;
+    player.scaleX = player.originalScale.x * 1.2;
 }
 
-function resetAnimation(sprite) {
-    if (player.originalScale) {
-        sprite.setScale(player.originalScale.x, player.originalScale.y);
-    }
+function resetAnimation() {
+    player.setScale(player.originalScale.x, player.originalScale.y);
 }
 
 function createTouchControls(scene) {
