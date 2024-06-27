@@ -9,7 +9,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false // Set to true to see physics bodies when needed
+            debug: false
         }
     },
     scene: {
@@ -33,7 +33,7 @@ let gameOver = false;
 
 function preload() {
     this.load.image('sky', 'https://labs.phaser.io/assets/skies/space4.png');
-    this.load.image('ground', 'https://labs.phaser.io/assets/sprites/platform.png');
+    this.load.svg('platform', 'graham-cracker-platform.svg');
     this.load.svg('hero', 'pink-puppy-squishmallow.svg');
     this.load.svg('villain', 'hot-cocoa-villain.svg');
     this.load.image('candy', 'https://labs.phaser.io/assets/sprites/star.png');
@@ -45,22 +45,29 @@ function create() {
 
     platforms = this.physics.add.staticGroup();
     
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    // Create main ground
+    createPlatform(400, 568, 8, 1);
+    
+    // Create other platforms
+    createPlatform(600, 400, 2, 1);
+    createPlatform(50, 250, 2, 1);
+    createPlatform(750, 220, 2, 1);
 
     player = this.physics.add.sprite(100, 450, 'hero');
     player.setDisplaySize(60, 60);
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
+    player.body.setSize(50, 50); // Adjust collision box
+    player.body.setOffset(5, 10); // Fine-tune collision box position
     player.originalScale = { x: player.scaleX, y: player.scaleY };
+    player.depth = 1; // Ensure player is drawn above platforms
 
     hotCocoaVillain = this.physics.add.sprite(700, 100, 'villain');
     hotCocoaVillain.setDisplaySize(80, 100);
     hotCocoaVillain.setBounce(1);
     hotCocoaVillain.setCollideWorldBounds(true);
     hotCocoaVillain.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+    hotCocoaVillain.depth = 1; // Ensure villain is drawn above platforms
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -112,7 +119,7 @@ function update() {
         animateJump(player);
     }
 
-    if (!onGround) {
+    if (!onGround && player.body.velocity.y > 0) {
         animateFall(player);
     }
 
@@ -123,6 +130,13 @@ function update() {
     }
 }
 
+function createPlatform(x, y, scaleX, scaleY) {
+    let platform = platforms.create(x, y, 'platform');
+    platform.setScale(scaleX, scaleY);
+    platform.refreshBody();
+    platform.depth = 0; // Ensure platforms are drawn behind characters
+}
+
 function animateWalk(sprite) {
     const walkCycleSpeed = 200;
     const walkAmplitude = 0.05;
@@ -131,8 +145,13 @@ function animateWalk(sprite) {
 }
 
 function animateJump(sprite) {
-    sprite.scaleY = sprite.originalScale.y * 1.2;
-    sprite.scaleX = sprite.originalScale.x * 0.8;
+    currentScene.tweens.add({
+        targets: sprite,
+        scaleY: sprite.originalScale.y * 1.2,
+        scaleX: sprite.originalScale.x * 0.8,
+        duration: 200,
+        yoyo: true
+    });
 }
 
 function animateFall(sprite) {
@@ -141,20 +160,27 @@ function animateFall(sprite) {
 }
 
 function resetAnimation(sprite) {
-    sprite.setScale(sprite.originalScale.x, sprite.originalScale.y);
+    currentScene.tweens.add({
+        targets: sprite,
+        scaleX: sprite.originalScale.x,
+        scaleY: sprite.originalScale.y,
+        duration: 100
+    });
 }
 
 function animateVillain(villain) {
     const glowIntensity = 0.5 + Math.sin(Date.now() / 300) * 0.5;
     villain.setTint(Phaser.Display.Color.GetColor(255, glowIntensity * 255, glowIntensity * 255));
     
-    // Ensure the villain keeps moving
     if (Math.abs(villain.body.velocity.x) < 50 || Math.abs(villain.body.velocity.y) < 50) {
         villain.setVelocity(
             Phaser.Math.Between(-200, 200),
             Phaser.Math.Between(-200, 200)
         );
     }
+
+    // Wobble animation
+    villain.angle = Math.sin(Date.now() / 200) * 5;
 }
 
 function createCocoaDrip(villain) {
