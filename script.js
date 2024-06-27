@@ -26,6 +26,7 @@ let platforms;
 let cursors;
 let hotCocoaVillain;
 let touchControls;
+let currentScene;
 
 function preload() {
     this.load.image('sky', 'https://labs.phaser.io/assets/skies/space3.png');
@@ -35,6 +36,7 @@ function preload() {
 }
 
 function create() {
+    currentScene = this;
     this.add.image(400, 300, 'sky');
 
     platforms = this.physics.add.staticGroup();
@@ -181,20 +183,20 @@ function animateVillain() {
 }
 
 function createCocoaDrip() {
-    const drip = this.add.circle(
+    const drip = currentScene.add.circle(
         hotCocoaVillain.x + Phaser.Math.Between(-20, 20),
         hotCocoaVillain.y + 40,
         5,
         0x3C1808
     );
-    this.physics.add.existing(drip);
+    currentScene.physics.add.existing(drip);
     drip.body.setVelocityY(100);
-    this.physics.add.collider(drip, platforms, (drip) => {
+    currentScene.physics.add.collider(drip, platforms, (drip) => {
         drip.destroy();
     });
 
     // Add a tween to make the drip stretch as it falls
-    this.tweens.add({
+    currentScene.tweens.add({
         targets: drip,
         scaleX: 0.5,
         scaleY: 1.5,
