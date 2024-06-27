@@ -9,7 +9,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: true // Set to true to see physics bodies
+            debug: false // Set to true to see physics bodies
         }
     },
     scene: {
