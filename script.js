@@ -49,7 +49,7 @@ function create() {
     createPlatform(400, 568, 8, 1);
     
     // Create other platforms
-    createPlatform(100, 400, 4, 1);  // Left platform
+    createPlatform(100, 360, 4, 1);  // Left platform
     createPlatform(600, 300, 4, 1);  // Right platform
     createPlatform(200, 100, 3, 1);  // Top center platform
 
