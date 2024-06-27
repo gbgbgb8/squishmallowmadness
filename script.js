@@ -25,6 +25,7 @@ let player;
 let platforms;
 let cursors;
 let hotCocoaVillain;
+let villagers;
 let touchControls;
 let currentScene;
 let score = 0;
@@ -36,6 +37,7 @@ function preload() {
     this.load.svg('platform', 'graham-cracker-platform.svg');
     this.load.svg('hero', 'pink-puppy-squishmallow.svg');
     this.load.svg('villain', 'hot-cocoa-villain.svg');
+    this.load.svg('villager', 'marshmallow-villager.svg');
     this.load.image('candy', 'https://labs.phaser.io/assets/sprites/star.png');
 }
 
@@ -57,38 +59,39 @@ function create() {
     player.setDisplaySize(60, 60);
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
-    player.body.setSize(50, 50); // Adjust collision box
-    player.body.setOffset(5, 10); // Fine-tune collision box position
+    player.body.setSize(50, 50);
+    player.body.setOffset(5, 10);
     player.originalScale = { x: player.scaleX, y: player.scaleY };
-    player.depth = 1; // Ensure player is drawn above platforms
+    player.depth = 1;
 
     hotCocoaVillain = this.physics.add.sprite(700, 100, 'villain');
     hotCocoaVillain.setDisplaySize(80, 100);
     hotCocoaVillain.setBounce(1);
     hotCocoaVillain.setCollideWorldBounds(true);
     hotCocoaVillain.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
-    hotCocoaVillain.depth = 1; // Ensure villain is drawn above platforms
+    hotCocoaVillain.depth = 1;
 
-    cursors = this.input.keyboard.createCursorKeys();
-
-    candies = this.physics.add.group({
-        key: 'candy',
+    villagers = this.physics.add.group({
+        key: 'villager',
         repeat: 11,
         setXY: { x: 12, y: 0, stepX: 70 }
     });
 
-    candies.children.iterate(function (child) {
+    villagers.children.iterate(function (child) {
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        child.setDisplaySize(30, 30);
+        child.setDisplaySize(40, 40);
+        child.depth = 1;
     });
+
+    cursors = this.input.keyboard.createCursorKeys();
 
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
 
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(hotCocoaVillain, platforms);
-    this.physics.add.collider(candies, platforms);
+    this.physics.add.collider(villagers, platforms);
 
-    this.physics.add.overlap(player, candies, collectCandy, null, this);
+    this.physics.add.overlap(player, villagers, rescueVillager, null, this);
     this.physics.add.collider(player, hotCocoaVillain, hitVillain, null, this);
 
     createTouchControls(this);
@@ -124,6 +127,7 @@ function update() {
     }
 
     animateVillain(hotCocoaVillain);
+    animateVillagers();
 
     if (Math.random() < 0.02) {
         createCocoaDrip(hotCocoaVillain);
@@ -134,7 +138,7 @@ function createPlatform(x, y, scaleX, scaleY) {
     let platform = platforms.create(x, y, 'platform');
     platform.setScale(scaleX, scaleY);
     platform.refreshBody();
-    platform.depth = 0; // Ensure platforms are drawn behind characters
+    platform.depth = 0;
 }
 
 function animateWalk(sprite) {
@@ -179,8 +183,16 @@ function animateVillain(villain) {
         );
     }
 
-    // Wobble animation
     villain.angle = Math.sin(Date.now() / 200) * 5;
+}
+
+function animateVillagers() {
+    villagers.children.entries.forEach((villager) => {
+        villager.angle = Math.sin(Date.now() / 200 + villager.x) * 5;
+        const bounceHeight = Math.sin(Date.now() / 300 + villager.x) * 2;
+        villager.y += bounceHeight - (villager.prevBounceHeight || 0);
+        villager.prevBounceHeight = bounceHeight;
+    });
 }
 
 function createCocoaDrip(villain) {
@@ -206,14 +218,25 @@ function createCocoaDrip(villain) {
     });
 }
 
-function collectCandy(player, candy) {
-    candy.disableBody(true, true);
-    score += 10;
+function rescueVillager(player, villager) {
+    villager.disableBody(true, true);
+    score += 50;
     scoreText.setText('Score: ' + score);
 
-    if (candies.countActive(true) === 0) {
-        candies.children.iterate(function (child) {
-            child.enableBody(true, child.x, 0, true, true);
+    const rescueEffect = currentScene.add.particles(villager.x, villager.y, 'villager', {
+        scale: { start: 0.5, end: 0 },
+        speed: 100,
+        lifespan: 1000,
+        blendMode: 'ADD'
+    });
+
+    currentScene.time.delayedCall(1000, () => {
+        rescueEffect.destroy();
+    });
+
+    if (villagers.countActive(true) === 0) {
+        villagers.children.entries.forEach((v) => {
+            v.enableBody(true, v.x, 0, true, true);
         });
 
         const x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
@@ -231,7 +254,6 @@ function collectCandy(player, candy) {
 function hitVillain(player, villain) {
     this.physics.pause();
     player.setTint(0xff0000);
-    player.anims.play('turn');
     gameOver = true;
     this.add.text(400, 300, 'Game Over', { fontSize: '64px', fill: '#000' }).setOrigin(0.5);
 }
