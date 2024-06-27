@@ -33,7 +33,7 @@ let scoreText;
 let gameOver = false;
 
 function preload() {
-    this.load.image('sky', 'backgroun01.png');
+    this.load.image('sky', 'background01.png');
     this.load.svg('platform', 'graham-cracker-platform.svg');
     this.load.svg('hero', 'pink-puppy-squishmallow.svg');
     this.load.svg('villain', 'hot-cocoa-villain.svg');
