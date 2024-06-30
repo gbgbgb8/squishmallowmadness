@@ -318,26 +318,44 @@ function createTouchControls(scene) {
         fill: '#ffffff',
         backgroundColor: '#4a4a4a',
         padding: {
-            x: 10,
-            y: 10
+            x: 15,
+            y: 15
         }
     };
 
+    // Left side controls
     const leftButton = scene.add.text(50, 550, '<', buttonStyle).setInteractive();
-    const rightButton = scene.add.text(150, 550, '>', buttonStyle).setInteractive();
-    const jumpButton = scene.add.text(100, 500, '^', buttonStyle).setInteractive();
+    const leftJumpButton = scene.add.text(100, 550, '^', buttonStyle).setInteractive();
 
+    // Right side controls
+    const rightButton = scene.add.text(700, 550, '>', buttonStyle).setInteractive();
+    const rightJumpButton = scene.add.text(650, 550, '^', buttonStyle).setInteractive();
+
+    // Set up left controls
     leftButton.on('pointerdown', () => touchControls.left.isDown = true);
     leftButton.on('pointerup', () => touchControls.left.isDown = false);
     leftButton.on('pointerout', () => touchControls.left.isDown = false);
 
+    leftJumpButton.on('pointerdown', () => touchControls.up.isDown = true);
+    leftJumpButton.on('pointerup', () => touchControls.up.isDown = false);
+    leftJumpButton.on('pointerout', () => touchControls.up.isDown = false);
+
+    // Set up right controls
     rightButton.on('pointerdown', () => touchControls.right.isDown = true);
     rightButton.on('pointerup', () => touchControls.right.isDown = false);
     rightButton.on('pointerout', () => touchControls.right.isDown = false);
 
-    jumpButton.on('pointerdown', () => touchControls.up.isDown = true);
-    jumpButton.on('pointerup', () => touchControls.up.isDown = false);
-    jumpButton.on('pointerout', () => touchControls.up.isDown = false);
+    rightJumpButton.on('pointerdown', () => touchControls.up.isDown = true);
+    rightJumpButton.on('pointerup', () => touchControls.up.isDown = false);
+    rightJumpButton.on('pointerout', () => touchControls.up.isDown = false);
+
+    // Group all buttons and set their properties
+    const allButtons = [leftButton, leftJumpButton, rightButton, rightJumpButton];
+    allButtons.forEach(button => {
+        button.setScrollFactor(0);
+        button.setDepth(100);
+        button.alpha = 0.8;
+    });
 }
 
 function wrapObject(object) {
