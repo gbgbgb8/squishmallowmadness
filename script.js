@@ -333,21 +333,25 @@ function createTouchControls(scene) {
 
     // Set up left controls
     leftButton.on('pointerdown', () => touchControls.left.isDown = true);
-    leftButton.on('pointerup', () => touchControls.left.isDown = false);
     leftButton.on('pointerout', () => touchControls.left.isDown = false);
-
-    leftJumpButton.on('pointerdown', () => touchControls.up.isDown = true);
-    leftJumpButton.on('pointerup', () => touchControls.up.isDown = false);
-    leftJumpButton.on('pointerout', () => touchControls.up.isDown = false);
+    leftButton.on('pointerup', () => touchControls.left.isDown = false);
 
     // Set up right controls
     rightButton.on('pointerdown', () => touchControls.right.isDown = true);
-    rightButton.on('pointerup', () => touchControls.right.isDown = false);
     rightButton.on('pointerout', () => touchControls.right.isDown = false);
+    rightButton.on('pointerup', () => touchControls.right.isDown = false);
 
-    rightJumpButton.on('pointerdown', () => touchControls.up.isDown = true);
-    rightJumpButton.on('pointerup', () => touchControls.up.isDown = false);
-    rightJumpButton.on('pointerout', () => touchControls.up.isDown = false);
+    // Set up jump controls (both buttons control the same 'up' action)
+    const handleJumpDown = () => touchControls.up.isDown = true;
+    const handleJumpUp = () => touchControls.up.isDown = false;
+
+    leftJumpButton.on('pointerdown', handleJumpDown);
+    leftJumpButton.on('pointerout', handleJumpUp);
+    leftJumpButton.on('pointerup', handleJumpUp);
+
+    rightJumpButton.on('pointerdown', handleJumpDown);
+    rightJumpButton.on('pointerout', handleJumpUp);
+    rightJumpButton.on('pointerup', handleJumpUp);
 
     // Group all buttons and set their properties
     const allButtons = [leftButton, leftJumpButton, rightButton, rightJumpButton];
@@ -356,6 +360,9 @@ function createTouchControls(scene) {
         button.setDepth(100);
         button.alpha = 0.8;
     });
+
+    // Enable multi-touch
+    scene.input.addPointer(3); // Support for up to 4 simultaneous touches
 }
 
 function wrapObject(object) {
