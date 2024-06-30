@@ -92,6 +92,11 @@ function create() {
     this.physics.add.overlap(player, villagers, rescueVillager, null, this);
     this.physics.add.collider(player, hotCocoaVillain, hitVillain, null, this);
 
+    // Add this to your create function
+    this.input.on('pointerdown', (pointer) => {
+    this.add.circle(pointer.x, pointer.y, 10, 0xff0000).setAlpha(0.5);
+    });
+
     createTouchControls(this);
 }
 
